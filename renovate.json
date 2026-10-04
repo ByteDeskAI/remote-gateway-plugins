@@ -1,0 +1,12 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "postUpdateOptions": ["gomodTidy"],
+  "packageRules": [
+    {
+      "description": "Keep every plugin on the same gateway SDK pin.",
+      "matchPackageNames": ["github.com/ByteDeskAI/**"],
+      "groupName": "gateway SDK"
+    }
+  ]
+}

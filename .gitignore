@@ -1,0 +1,6 @@
+dist/
+*.tar.gz
+/plugins/*/bin/
+.env*
+!.env.example
+go.work.sum
