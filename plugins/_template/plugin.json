@@ -1,0 +1,34 @@
+{
+  "contract": 2,
+  "kind": "process",
+  "id": "example",
+  "version": "0.0.0",
+  "targets": [
+    "gateway"
+  ],
+  "binary": "example",
+  "socket": "plugin.sock",
+  "protocol": {
+    "major": 2
+  },
+  "identity": {
+    "displayName": "example",
+    "description": "Starting point for a ByteDesk remote-gateway plugin."
+  },
+  "publisher": {
+    "id": "bytedesk",
+    "name": "ByteDesk"
+  },
+  "serves": [
+    {
+      "name": "example",
+      "version": "1.0.0",
+      "endpoints": [
+        {
+          "name": "ping",
+          "subject": "svc.example.v1.ping"
+        }
+      ]
+    }
+  ]
+}
