@@ -1,0 +1,119 @@
+{
+  "contract": 2,
+  "kind": "process",
+  "id": "firewalla",
+  "version": "0.0.0",
+  "identity": {
+    "displayName": "Firewalla",
+    "description": "Read and manage your Firewalla router from the gateway: MSP API (boxes, devices, rules, alarms, flows, stats, target lists) and read-only SSH (interfaces, routes, DHCP leases)."
+  },
+  "publisher": {
+    "id": "bytedesk",
+    "name": "ByteDesk"
+  },
+  "pricing": {
+    "model": "free"
+  },
+  "targets": [
+    "gateway"
+  ],
+  "spawn": true,
+  "binary": "firewalla",
+  "socket": "plugin.sock",
+  "protocol": {
+    "major": 2,
+    "required": [
+      "http.routes.v1"
+    ]
+  },
+  "routes": [
+    "/p/firewalla/"
+  ],
+  "serves": [
+    {
+      "name": "svc.firewalla.host.settings.section.v1.validate",
+      "version": "1.0.0",
+      "endpoints": [
+        {
+          "name": "svc.firewalla.host.settings.section.v1.validate",
+          "subject": "svc.firewalla.host.settings.section.v1.validate",
+          "point": "host.settings.section"
+        }
+      ]
+    },
+    {
+      "name": "mcp.tool",
+      "version": "1.0.0",
+      "endpoints": [
+        {
+          "name": "tools",
+          "subject": "svc.firewalla.mcp.tool.v1.tools",
+          "point": "mcp.tool"
+        },
+        {
+          "name": "call",
+          "subject": "svc.firewalla.mcp.tool.v1.call",
+          "point": "mcp.tool"
+        }
+      ]
+    }
+  ],
+  "implements": [
+    {
+      "point": "host.settings.section",
+      "id": "firewalla"
+    },
+    {
+      "point": "mcp.tool",
+      "id": "firewalla"
+    }
+  ],
+  "permissions": {
+    "request": [
+      "cmd.gateway.settings.v1.read-owner"
+    ]
+  },
+  "config": {
+    "sections": [
+      {
+        "id": "firewalla",
+        "title": "Firewalla",
+        "description": "Connect your Firewalla MSP account and box. Write tools stay off until you turn them on, and every write still needs confirm: true.",
+        "fields": [
+          {
+            "key": "mspDomain",
+            "kind": "string",
+            "label": "MSP domain",
+            "description": "Your MSP domain without https://, for example mycompany.firewalla.net."
+          },
+          {
+            "key": "mspToken",
+            "kind": "secret",
+            "label": "MSP API token",
+            "description": "Personal access token from MSP Settings → MSP API. Write-only."
+          },
+          {
+            "key": "boxHost",
+            "kind": "string",
+            "label": "Box address",
+            "description": "LAN address of the Firewalla box for SSH reads, for example 192.168.1.1."
+          },
+          {
+            "key": "enableWrites",
+            "kind": "bool",
+            "label": "Enable write tools",
+            "description": "Allows MSP changes (rename devices, rules, alarms, target lists). Each call still needs confirm: true.",
+            "default": "false"
+          },
+          {
+            "key": "enableSshWrites",
+            "kind": "bool",
+            "label": "Enable SSH writes",
+            "description": "Reserved. No SSH write tools exist yet; network and DHCP changes over SSH are planned after on-box verification.",
+            "default": "false"
+          }
+        ]
+      }
+    ]
+  }
+}

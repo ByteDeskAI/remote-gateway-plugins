@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Usage: tools/new-plugin <id>
+#
+# Copies plugins/_template to plugins/<id> and renames the template's id
+# ("example") to <id> in every file: plugin id, display name, Go module path,
+# binary name and service subjects. The result passes `release check`.
+set -euo pipefail
+fail() { printf 'new-plugin: %s\n' "$*" >&2; exit 1; }
+
+[[ $# == 1 ]] || fail 'usage: tools/new-plugin <id>'
+id=$1
+# Same rule as docs/CONTRACT.md and tools/release: lowercase kebab-case, 2-40 characters.
+[[ ${#id} -ge 2 && ${#id} -le 40 && $id =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] \
+  || fail "invalid id '$id': use lowercase kebab-case, 2-40 characters"
+
+root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
+template=$root/plugins/_template
+target=$root/plugins/$id
+[[ -d $template ]] || fail "template missing: $template"
+[[ ! -e $target ]] || fail "plugins/$id already exists"
+
+cp -R -- "$template" "$target"
+# Whole-word replacement only, so words that merely contain "example" survive.
+find "$target" -type f -exec perl -pi -e "s/\\bexample\\b/$id/g" {} +
+cat > "$target/README.md" <<README
+# $id
+
+A ByteDesk remote-gateway plugin. See [docs/CONTRACT.md](../../docs/CONTRACT.md).
+
+Test and build locally: \`scripts/ci/plugin-build-v1.sh "\$(mktemp -d)"\`.
+README
+
+printf 'Created plugins/%s. Next:\n' "$id"
+printf '  1. Edit plugins/%s/plugin.json (identity, serves) and main.go.\n' "$id"
+printf '  2. Commit with a scope: feat(%s): add %s plugin\n' "$id" "$id"
