@@ -15,6 +15,11 @@ info "base $target @ $base"
 release check
 release check --commits "$base..HEAD"
 
+# The shared kit is its own module. A kit-only change otherwise has no plugin
+# in the build plan and could pass without running any of its tests.
+info "Test the shared plugin kit"
+(cd kit && GOWORK=off go test -race ./...)
+
 # Changed plugins: folders under plugins/ touched since the base, minus "_" ones
 # and folders deleted by this change.
 plan="$WORK/plan.json"
